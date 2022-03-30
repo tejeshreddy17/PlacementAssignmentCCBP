@@ -17,12 +17,15 @@ import {
 import './index.css'
 
 const Header = props => {
-  const {logo, text} = props
+  const {logo, text, switchingTabs} = props
 
   const redirectingToObservations = () => {
     const {history} = props
 
     history.push('/observation')
+  }
+  const toggling = () => {
+    switchingTabs()
   }
 
   return (
@@ -44,9 +47,7 @@ const Header = props => {
       )}
       <ObservationPageHeading>{text}</ObservationPageHeading>
       <PostButtonProfilePicContainer>
-        <PostButton onClick={redirectingToObservations}>
-          Observations
-        </PostButton>
+        <PostButton onClick={toggling}>Observations</PostButton>
         <PostButton>Write Post</PostButton>
         <ProfilePic
           alt="profilePic"

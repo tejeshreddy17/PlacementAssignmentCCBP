@@ -27,10 +27,18 @@ const apiStatusConstants = {
 }
 
 class RequestCard extends Component {
-  state = {loadingStatus: apiStatusConstants.initial, approvedStatus: false}
+  state = {loadingStatus: apiStatusConstants.initial}
 
   onApproving = async () => {
     this.setState({loadingStatus: apiStatusConstants.loading})
+    const {request} = this.props
+    const {postId, postedBy} = request
+    const {userId} = postedBy
+
+    const {onApproving} = this.props
+
+    onApproving(postId)
+    const details = {userId, postId}
 
     const apiUrl =
       'https://y5764x56r9.execute-api.ap-south-1.amazonaws.com/mockAPI/posts'
@@ -40,26 +48,44 @@ class RequestCard extends Component {
         'Content-Type': 'application/json',
       },
       method: 'POST',
+      body: JSON.stringify(details),
     }
     const response = await fetch(apiUrl, options)
 
     if (response.ok === true) {
-      this.setState(prevState => ({
+      this.setState({
         loadingStatus: apiStatusConstants.success,
-        approvedStatus: !prevState.approvedStatus,
-      }))
+      })
     }
   }
 
   renderingButtonUI = () => {
-    const {loadingStatus, approvedStatus} = this.state
+    const {request} = this.props
+    const {approvalStatus} = request
+    const {loadingStatus} = this.state
     switch (loadingStatus) {
       case apiStatusConstants.success:
-        return approvedStatus ? 'Approved' : 'Approve'
+        return approvalStatus ? (
+          <Labels backgroundColor="#f3fff8" color="#2dca73">
+            Approved
+          </Labels>
+        ) : (
+          <CardButton onClick={this.onApproving}>Approve</CardButton>
+        )
       case apiStatusConstants.initial:
-        return 'Approve'
+        return approvalStatus ? (
+          <Labels backgroundColor="#f3fff8" color="#2dca73">
+            Approved
+          </Labels>
+        ) : (
+          <CardButton onClick={this.onApproving}>Approve</CardButton>
+        )
       case apiStatusConstants.loading:
-        return <Loader type="TailSpin" color="#ffffff" height={20} width={20} />
+        return (
+          <CardButton onClick={this.onApproving}>
+            <Loader type="TailSpin" color="#ffffff" height={20} width={20} />
+          </CardButton>
+        )
       default:
         return null
     }
@@ -102,9 +128,7 @@ class RequestCard extends Component {
             <ProfilePic src={profilePic} />
             <PostUserName>{username}</PostUserName>
           </ProfilePicContainer>
-          <CardButton onClick={this.onApproving}>
-            {this.renderingButtonUI()}
-          </CardButton>
+          {this.renderingButtonUI()}
         </ProfilePicButtonContainer>
       </CardContainer>
     )

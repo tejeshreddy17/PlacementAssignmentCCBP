@@ -4,6 +4,8 @@ import {useTable} from 'react-table'
 
 import Loader from 'react-loader-spinner'
 
+import {CardButton} from '../RequestsCardItem/styledComponents'
+
 import Header from '../RequestHeader'
 
 import {
@@ -62,9 +64,10 @@ function Table({columns, data}) {
   )
 }
 
-const Observations = () => {
-  const [DetailsData, setData] = useState([])
-  const [loading, setLoading] = useState(true)
+const Observations = props => {
+  const {requests, onApproving} = props
+
+  const [loading, setLoading] = useState(false)
 
   const columns = React.useMemo(
     () => [
@@ -106,6 +109,29 @@ const Observations = () => {
           )
         },
       },
+
+      {
+        Header: 'Approval Status',
+        accessor: 'approvalStatus',
+        Cell: cell => {
+          const {value, row} = cell
+
+          const {original} = row
+          const {postId, approvalStatus} = original
+          console.log(approvalStatus)
+          const onClickingApprovingButton = () => {
+            onApproving(postId)
+          }
+
+          return value ? (
+            <Labels backgroundColor="#f3fff8" color="#2dca73">
+              Approved
+            </Labels>
+          ) : (
+            <CardButton onClick={onClickingApprovingButton}>Approve</CardButton>
+          )
+        },
+      },
       {
         Header: 'Tags',
         accessor: 'tags',
@@ -125,49 +151,10 @@ const Observations = () => {
     ],
     [],
   )
-
-  const gettingData = async () => {
-    const apiUrl =
-      'https://y5764x56r9.execute-api.ap-south-1.amazonaws.com/mockAPI/posts'
-    const options = {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      method: 'GET',
-    }
-    const response = await fetch(apiUrl, options)
-
-    const data = await response.json()
-    const formattedData = data.map(eachData => ({
-      commentsCount: eachData.comments_count,
-      postContent: eachData.post_content,
-      postId: eachData.post_id,
-      postedAt: eachData.posted_at,
-      reactions: {reactionsCount: eachData.reactions.reactions_count},
-      title: eachData.title,
-      postedBy: {
-        profilePic: eachData.posted_by.profile_pic,
-        userId: eachData.posted_by.user_id,
-        username: eachData.posted_by.username,
-      },
-      tags: eachData.tags.map(eachTag => ({
-        tagId: eachTag.tag_id,
-        tagName: eachTag.tag_name,
-      })),
-    }))
-    if (response.ok === true) {
-      setData(formattedData)
-      setLoading(false)
-    }
-  }
-
-  useEffect(() => {
-    gettingData()
-  }, [])
+  console.log('rerendering')
 
   return (
     <ObservationPageAppBackground>
-      <Header logo text="Reporting Portal" />
       <ObservationTableContainer>
         <HeadingObservations>Observations Assigned to me</HeadingObservations>
         {loading ? (
@@ -176,7 +163,7 @@ const Observations = () => {
           </LoaderContainer>
         ) : (
           <Styles>
-            <Table columns={columns} data={DetailsData} />
+            <Table columns={columns} data={requests} />
           </Styles>
         )}
       </ObservationTableContainer>

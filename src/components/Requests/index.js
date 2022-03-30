@@ -4,6 +4,8 @@ import Loader from 'react-loader-spinner'
 
 import RequestCard from '../RequestsCardItem'
 
+import SampleRequestCard from '../RequestsCardItem/sample'
+
 import {
   RequestPageAppBackground,
   RequestCardsContainer,
@@ -18,6 +20,8 @@ import SideBar from '../SideBar'
 
 import Header from '../RequestHeader'
 
+import Observations from '../Observations'
+
 const apiStatusConstants = {
   initial: 'initial',
   success: 'success',
@@ -28,7 +32,7 @@ const apiStatusConstants = {
 class RequestPage extends Component {
   state = {
     requests: [],
-
+    tableView: false,
     apiLoadingStatus: apiStatusConstants.initial,
   }
 
@@ -66,6 +70,7 @@ class RequestPage extends Component {
         tagId: eachTag.tag_id,
         tagName: eachTag.tag_name,
       })),
+      approvalStatus: false,
     }))
     console.log(formattedData)
     if (response.ok === true) {
@@ -76,6 +81,10 @@ class RequestPage extends Component {
     } else {
       this.setState({apiLoadingStatus: apiStatusConstants.failure})
     }
+  }
+
+  switchingTabs = () => {
+    this.setState(prevState => ({tableView: !prevState.tableView}))
   }
 
   renderingLoader = () => (
@@ -105,22 +114,39 @@ class RequestPage extends Component {
     </LoaderContainer>
   )
 
+  onApproving = postId => {
+    console.log(postId)
+
+    this.setState(prevState => ({
+      requests: prevState.requests.map(eachRequest => {
+        if (eachRequest.postId === postId) {
+          return {...eachRequest, approvalStatus: true}
+        }
+        return eachRequest
+      }),
+    }))
+  }
+
   renderingContent = () => {
     const {requests} = this.state
     return (
       <RequestCardsContainer>
         {requests.map(eachRequest => (
-          <RequestCard
-            approvingRequest={this.approvingRequest}
-            key={eachRequest.postId}
-            request={eachRequest}
-          />
+          <>
+            <RequestCard
+              approvingRequest={this.approvingRequest}
+              key={eachRequest.postId}
+              request={eachRequest}
+              updatingApprovalStatus={this.updatingApprovalStatus}
+              onApproving={this.onApproving}
+            />
+          </>
         ))}
       </RequestCardsContainer>
     )
   }
 
-  renderingUI = () => {
+  renderingGridUI = () => {
     const {apiLoadingStatus} = this.state
 
     switch (apiLoadingStatus) {
@@ -136,13 +162,18 @@ class RequestPage extends Component {
   }
 
   render() {
+    const {tableView, requests} = this.state
     return (
       <RequestPageAppBackground>
         <SideBar />
         <RequestsAndHeaderContainer>
-          <Header />
+          <Header switchingTabs={this.switchingTabs} />
 
-          {this.renderingUI()}
+          {tableView ? (
+            <Observations onApproving={this.onApproving} requests={requests} />
+          ) : (
+            this.renderingGridUI()
+          )}
         </RequestsAndHeaderContainer>
       </RequestPageAppBackground>
     )
