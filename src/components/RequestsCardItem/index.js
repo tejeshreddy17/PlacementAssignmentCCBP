@@ -17,6 +17,7 @@ import {
   Labels,
   ReactionIconCountContainer,
   ReactionCount,
+  NoProfilePic,
 } from './styledComponents'
 
 const apiStatusConstants = {
@@ -106,7 +107,11 @@ class RequestCard extends Component {
     return (
       <CardContainer>
         <Heading>{title.slice(0, 70)}</Heading>
-        <Description>{postContent.slice(0, 70)}... </Description>
+        {postContent.length > 70 && (
+          <Description>{postContent.slice(0, 70)}... </Description>
+        )}
+        {postContent.length < 70 && <Description>{postContent} </Description>}
+
         <ReactionLabelsContainer>
           <LabelsContainer>
             <Labels backgroundColor="rgba(11, 105, 255, 0.1)" color="#0b69ff">
@@ -116,7 +121,7 @@ class RequestCard extends Component {
               teamui
             </Labels>
           </LabelsContainer>
-          {reactionsCount > 0 && (
+          {commentsCount > 0 && (
             <ReactionIconCountContainer>
               <ReactionsIcon src="https://res.cloudinary.com/tejeshreddy17/image/upload/v1648167458/Icon_3x_wfomlz.png" />
               <ReactionCount>{commentsCount}</ReactionCount>
@@ -125,7 +130,10 @@ class RequestCard extends Component {
         </ReactionLabelsContainer>
         <ProfilePicButtonContainer>
           <ProfilePicContainer>
-            <ProfilePic src={profilePic} />
+            {profilePic !== '' && <ProfilePic src={profilePic} />}
+            {profilePic === '' && (
+              <NoProfilePic>{username.slice(0, 1)}</NoProfilePic>
+            )}
             <PostUserName>{username}</PostUserName>
           </ProfilePicContainer>
           {this.renderingButtonUI()}

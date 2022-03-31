@@ -30,6 +30,7 @@ export const Styles = styled.div`
   table {
     border-spacing: 0;
     border: 1px solid #d7dfe9;
+    border-top: none;
     background-color: white;
 
     tr {
@@ -49,30 +50,31 @@ export const Styles = styled.div`
       font-style: normal;
       line-height: 1.33;
       letter-spacing: 0.12px;
-      border-bottom: 1px solid #d7dfe9;
-      border-right: 1px solid #d7dfe9;
+
+      border-top: 1px solid #d7dfe9;
       text-align: center;
-      margin: 0;
+      margin: 10px;
       padding: 10px;
     }
     :last-child {
-      border-right: 0;
+      border-right: 1px solid #d7dfe9;
     }
     td {
-      margin: 0;
+      margin: 10px;
       padding: 0.5rem;
-      border-bottom: 1px solid #d7dfe9;
-      border-right: 1px solid #d7dfe9;
+
+      border-top: 1px solid #d7dfe9;
       text-align: center;
       font-family: HK Grotesk;
-      font-size: 12px;
+      font-size: 14px;
       font-weight: 600;
       font-stretch: normal;
       font-style: normal;
-      line-height: 1.33;
+      line-height: 1.71;
       letter-spacing: normal;
       color: #7e858e;
       padding: 10px;
+      font-size: 14px;
     }
   }
 `
@@ -82,17 +84,33 @@ export const CellProfileContainer = styled.div`
   justify-content: flex-start;
   align-items: center;
   min-width: 170px;
-
-  align-self: stretch;
 `
+export const ProfileNameWithoutProfilePic = styled.p`
+  margin-left: 65px;
+`
+
 export const CellProfilePic = styled.img`
   height: 38px;
   width: 38px;
   margin-right: 15px;
   margin-left: 15px;
-
   border-radius: 19px;
 `
+export const NoProfilePic = styled.div`
+  background-color: #ffb800;
+  color: white;
+  height: 38px;
+  width: 38px;
+  border-radius: 19px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-right: 15px;
+  margin-left: 15px;
+  font-size: 15px;
+`
+
 export const ReactionIconCountContainer = styled.div`
   display: flex;
   flex-direction: row;
@@ -147,4 +165,12 @@ export const LoaderContainer = styled.div`
   align-self: stretch;
   width: 100%;
   height: 100%;
+`
+export const SelectContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 15px;
+  width: 70%;
 `

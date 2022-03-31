@@ -1,12 +1,18 @@
 import React, {useState, useEffect} from 'react'
 
-import {useTable} from 'react-table'
+import {useTable, useSortBy} from 'react-table'
+
+import Select from 'react-select'
+
+import makeAnimated from 'react-select/animated'
 
 import Loader from 'react-loader-spinner'
 
 import {CardButton} from '../RequestsCardItem/styledComponents'
 
 import Header from '../RequestHeader'
+
+import './index.css'
 
 import {
   ObservationTableContainer,
@@ -20,6 +26,9 @@ import {
   ReactionsIcon,
   Labels,
   LoaderContainer,
+  ProfileNameWithoutProfilePic,
+  NoProfilePic,
+  SelectContainer,
 } from './styledComponents'
 
 function Table({columns, data}) {
@@ -30,10 +39,14 @@ function Table({columns, data}) {
     headerGroups,
     rows,
     prepareRow,
-  } = useTable({
-    columns,
-    data,
-  })
+  } = useTable(
+    {
+      columns,
+      data,
+    },
+    useSortBy,
+  )
+  const renderingSorting = arg1 => (arg1.isSortedDesc ? ' 🔽' : ' 🔼')
 
   // Render the UI for your table
   return (
@@ -42,7 +55,10 @@ function Table({columns, data}) {
         {headerGroups.map(headerGroup => (
           <tr {...headerGroup.getHeaderGroupProps()}>
             {headerGroup.headers.map(column => (
-              <th {...column.getHeaderProps()}>{column.render('Header')}</th>
+              <th {...column.getHeaderProps(column.getSortByToggleProps())}>
+                {column.render('Header')}
+                <span>{column.isSorted ? renderingSorting(column) : ''}</span>
+              </th>
             ))}
           </tr>
         ))}
@@ -69,6 +85,8 @@ const Observations = props => {
 
   const [loading, setLoading] = useState(false)
 
+  const [category, setCategory] = useState([])
+
   const columns = React.useMemo(
     () => [
       {
@@ -86,16 +104,41 @@ const Observations = props => {
         Cell: cell => {
           const {value} = cell
           const {username, profilePic} = value
+          const [firstName, Lastname] = username.split(' ')
+
+          const firstFirstLetter = firstName.slice(0, 1)
+          const displayedFirstName = firstFirstLetter
+            .toUpperCase()
+            .concat(firstName.slice(1))
+
+          const displayedLastName =
+            Lastname !== undefined
+              ? Lastname.slice(0, 1).toUpperCase().concat(Lastname.slice(1))
+              : ''
+          const displayedName =
+            Lastname !== undefined
+              ? displayedFirstName.concat(' ', displayedLastName)
+              : displayedFirstName
+
           return (
             <CellProfileContainer>
-              <CellProfilePic src={profilePic} />
-              <p>{username}</p>
+              {profilePic !== '' && (
+                <>
+                  <CellProfilePic src={profilePic} />
+                  <p>{username}</p>
+                </>
+              )}
+              {profilePic === '' && (
+                <>
+                  <NoProfilePic>{username.slice(0, 1)}</NoProfilePic>
+                  <p>{username}</p>
+                </>
+              )}
             </CellProfileContainer>
           )
         },
       },
       {Header: 'Comments Count', accessor: 'commentsCount'},
-      {Header: 'Post Content', accessor: 'postContent'},
       {
         Header: 'Reactions',
         accessor: 'reactions.reactionsCount',
@@ -118,7 +161,6 @@ const Observations = props => {
 
           const {original} = row
           const {postId, approvalStatus} = original
-          console.log(approvalStatus)
           const onClickingApprovingButton = () => {
             onApproving(postId)
           }
@@ -139,7 +181,7 @@ const Observations = props => {
           const {value} = cell
           return value.map(eachTag => (
             <Labels
-              key={eachTag.tagName}
+              key={eachTag.tagId}
               backgroundColor="#f3fff8"
               color="#2dca73"
             >
@@ -151,12 +193,36 @@ const Observations = props => {
     ],
     [],
   )
-  console.log('rerendering')
+  const options = [
+    {value: 'tag', label: 'tag'},
+    {value: 'taga', label: 'tasg'},
+  ]
 
   return (
     <ObservationPageAppBackground>
       <ObservationTableContainer>
         <HeadingObservations>Observations Assigned to me</HeadingObservations>
+        <SelectContainer>
+          <Select
+            className="selectComponent"
+            placeholder="category"
+            isSearchable
+            options={options}
+            onChange={setCategory}
+            noOptionsMessage={() => 'No Categories Left'}
+          />
+          <Select
+            className="selectComponent selectComponent2"
+            placeholder="category"
+            isSearchable
+            components={makeAnimated()}
+            options={options}
+            isMulti
+            onChange={setCategory}
+            noOptionsMessage={() => 'No Categories Left'}
+          />
+          <CardButton>Search</CardButton>
+        </SelectContainer>
         {loading ? (
           <LoaderContainer>
             <Loader type="TailSpin" color="#4094EF" height={50} width={50} />

@@ -4,8 +4,6 @@ import Loader from 'react-loader-spinner'
 
 import RequestCard from '../RequestsCardItem'
 
-import SampleRequestCard from '../RequestsCardItem/sample'
-
 import {
   RequestPageAppBackground,
   RequestCardsContainer,

@@ -35,3 +35,12 @@ td {
   color: #7e858e;
   padding: 10px;
 }
+
+.selectComponent {
+  width: 350px;
+  margin-right: 25px;
+  height: 40px;
+}
+.selectComponent2 {
+  width: 450px;
+}

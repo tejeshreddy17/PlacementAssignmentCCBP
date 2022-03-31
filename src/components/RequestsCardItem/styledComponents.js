@@ -40,6 +40,17 @@ export const ProfilePic = styled.img`
   width: 36px;
   border-radius: 18px;
 `
+export const NoProfilePic = styled.div`
+  background-color: #ffb800;
+  color: white;
+  height: 36px;
+  width: 36px;
+  border-radius: 18px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+`
 
 export const ProfilePicButtonContainer = styled.div`
   display: flex;
